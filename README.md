@@ -1,27 +1,46 @@
 # Multiple Activities App
 
-A secure web application with authentication, secret messaging, and friend management features. Users can create accounts, set secret messages, add friends, and view each other's secret messages.
+A secure web application with authentication and multiple activity features. Users can create accounts, manage todos, share photos, review food and Pokemon, create markdown notes, and interact with friends.
 
 ## Features
 
 - 🔐 **Authentication System**
-
   - User registration with strong password validation
-  - Password strength indicator
+  - Password strength indicator with real-time feedback
   - Login/Logout functionality
   - Account deletion
+  - Email confirmation via Supabase
 
-- 📝 **Secret Messages**
+- ✅ **Activity 1: Todo List**
+  - Create, edit, and delete todos
+  - Mark todos as complete/incomplete
+  - Optimistic UI updates
 
-  - View your secret message (Secret Page 1)
-  - Add/Edit your secret message (Secret Page 2)
-  - Password visibility toggle
+- 📸 **Activity 2: Photo Gallery**
+  - Upload and manage photos
+  - View photo gallery
+  - Delete photos
 
-- 👥 **Friend System** (Secret Page 3)
+- 🍽️ **Activity 3: Food Review**
+  - Upload food photos
+  - Rate and review food items
+  - Browse food reviews
+
+- ⚡ **Activity 4: Pokemon Review**
+  - Review Pokemon characters
+  - Rate and comment on Pokemon
+  - Browse Pokemon reviews
+
+- 📝 **Activity 5: Markdown Notes**
+  - Create and edit markdown notes
+  - Rich text formatting support
+  - Note management
+
+- 👥 **Friend System**
   - Browse all users
   - Send friend requests
   - Accept friend requests
-  - View friends' secret messages
+  - View friends' content
   - 401 unauthorized protection for non-friends
 
 ## Tech Stack
@@ -66,6 +85,14 @@ A secure web application with authentication, secret messaging, and friend manag
 
 - **Zod 4.1.12** - Schema validation
 
+### Testing
+
+- **Jest 30.2.0** - JavaScript testing framework
+- **React Testing Library 16.3.0** - React component testing utilities
+- **@testing-library/user-event 14.6.1** - User interaction simulation
+- **@testing-library/jest-dom 6.9.1** - Custom Jest matchers for DOM testing
+- **jest-environment-jsdom** - Browser-like environment for Jest
+
 ### Development Tools
 
 - **ESLint** - Code linting
@@ -86,7 +113,7 @@ A secure web application with authentication, secret messaging, and friend manag
 
 ```bash
 git clone <repository-url>
-cd secret-page-app
+cd multiple-activities-app
 ```
 
 2. Install dependencies:
@@ -114,7 +141,6 @@ Get these values from:
 - Database settings: https://supabase.com/dashboard/project/_/settings/database
 
 4. Set up the database:
-
    - Run the SQL script in `prisma/setup-triggers.sql` in your Supabase SQL Editor
    - This creates triggers for automatic profile creation and user deletion
 
@@ -138,45 +164,81 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
+### Running Tests
+
+After installation, you can run the test suite:
+
+```bash
+# Run all tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+```
+
 ## Project Structure
 
 ```
-secret-page-app/
+multiple-activities-app/
 ├── app/
 │   ├── (auth)/
-│   │   ├── login/          # Login page
-│   │   ├── signup/         # Signup page
-│   │   └── error/          # Error page
+│   │   ├── auth/
+│   │   │   └── confirm/        # Email confirmation route
+│   │   ├── login/              # Login page
+│   │   ├── signup/             # Signup page (with tests)
+│   │   │   ├── page.tsx
+│   │   │   └── page.test.tsx   # Unit and integration tests
+│   │   └── error/              # Error page
 │   ├── actions/
-│   │   ├── auth.ts         # Authentication actions
-│   │   ├── friends.ts      # Friend management actions
-│   │   └── secret.ts       # Secret message actions
+│   │   ├── auth.ts             # Authentication actions
+│   │   ├── todos.ts            # Todo management actions
+│   │   ├── photos.ts           # Photo management actions
+│   │   ├── food-photos.ts      # Food review actions
+│   │   ├── pokemon-reviews.ts  # Pokemon review actions
+│   │   ├── pokemon.ts          # Pokemon data actions
+│   │   ├── notes.ts            # Notes management actions
+│   │   ├── reviews.ts          # Review actions
+│   │   ├── friends.ts          # Friend management actions
+│   │   └── secret.ts           # Secret message actions
 │   ├── api/
-│   │   └── friends/        # API routes for friend messages
-│   ├── secret-page-1/      # View secret message
-│   ├── secret-page-2/      # Edit secret message
-│   ├── secret-page-3/      # Friend system
-│   ├── layout.tsx          # Root layout
-│   └── page.tsx            # Homepage
+│   │   └── friends/            # API routes for friend messages
+│   ├── todos/                  # Activity 1: Todo List
+│   ├── photos/                 # Activity 2: Photo Gallery
+│   ├── food-review/            # Activity 3: Food Review
+│   ├── pokemon-review/         # Activity 4: Pokemon Review
+│   ├── notes/                  # Activity 5: Markdown Notes
+│   ├── layout.tsx              # Root layout
+│   └── page.tsx                # Homepage (activity hub)
 ├── components/
-│   ├── ui/                 # shadcn/ui components
-│   ├── add-friend-form.tsx
-│   ├── back-button.tsx
-│   ├── delete-account-button.tsx
+│   ├── ui/                     # shadcn/ui components
+│   ├── todo-list.tsx
+│   ├── photo-gallery.tsx
+│   ├── food-review-gallery.tsx
+│   ├── pokemon-review-gallery.tsx
+│   ├── notes-list.tsx
 │   ├── friends-list.tsx
-│   ├── logout-button.tsx
-│   ├── password-input.tsx
+│   ├── users-list.tsx
 │   ├── pending-requests.tsx
-│   ├── secret-message-form.tsx
-│   └── users-list.tsx
+│   ├── password-input.tsx
+│   ├── password-strength-indicator.tsx
+│   ├── logout-button.tsx
+│   ├── delete-account-button.tsx
+│   ├── back-button.tsx
+│   └── secret-message-form.tsx
 ├── lib/
-│   ├── prisma.ts           # Prisma client
-│   └── utils.ts            # Utility functions
+│   ├── prisma.ts               # Prisma client
+│   ├── password-strength.ts    # Password validation logic
+│   └── utils.ts                # Utility functions
 ├── prisma/
-│   ├── schema.prisma       # Database schema
-│   └── setup-triggers.sql  # Database triggers
-└── utils/
-    └── supabase/           # Supabase client utilities
+│   ├── schema.prisma           # Database schema
+│   └── setup-triggers.sql      # Database triggers
+├── utils/
+│   └── supabase/               # Supabase client utilities
+│       ├── client.ts           # Client-side Supabase client
+│       ├── server.ts           # Server-side Supabase client
+│       └── middlware.ts        # Middleware for session management
+├── jest.config.ts              # Jest configuration
+└── components.json             # shadcn/ui configuration
 ```
 
 ## Database Schema
@@ -199,40 +261,91 @@ secret-page-app/
 - `npm run build` - Build for production
 - `npm run start` - Start production server
 - `npm run lint` - Run ESLint
+- `npm run test` - Run tests with Jest
+- `npm run test:watch` - Run tests in watch mode
 - `npm run db:generate` - Generate Prisma Client
 - `npm run db:push` - Push schema to database
 - `npm run db:migrate` - Run database migrations
 
-## Features Breakdown
+## Testing
 
-### Secret Page 1
+This project includes comprehensive unit and integration tests using Jest and React Testing Library.
 
-- View your secret message
-- Sign out
-- Delete account
+### Test Coverage
 
-### Secret Page 2
+The signup page (`app/(auth)/signup/page.test.tsx`) includes:
 
-- All features from Secret Page 1
-- Add/Edit secret message
-- Real-time validation
+#### Unit Tests
 
-### Secret Page 3
+- ✅ Correct input field labels and accessibility
+- ✅ Input field types (email, password)
+- ✅ Form input validation and error messages
+- ✅ Password strength validation
+- ✅ Password matching validation
+- ✅ Form submission validation
 
-- All features from Secret Page 1 & 2
-- Browse all users
-- Send friend requests
-- Accept friend requests
-- View friends' secret messages
-- 401 protection for unauthorized access
+#### Integration Tests
+
+- ✅ End-to-end signup flow with valid data
+- ✅ Form data structure validation
+- ✅ ActionResult structure verification
+- ✅ Error handling and toast notifications
+- ✅ Loading states during async operations
+
+#### Additional Requirements
+
+- ✅ Navigation link tests (prevents breaking changes)
+- ✅ Supabase API properties tests (ensures API contract)
+  - Verifies `error.message` property exists
+  - Tests success/error response structures
+  - Validates error handling fallbacks
+
+### Running Tests
+
+```bash
+# Run all tests
+npm test
+
+# Run tests in watch mode (for development)
+npm run test:watch
+
+# Run specific test file
+npm test app/(auth)/signup/page.test.tsx
+```
+
+### Test Structure
+
+Tests are organized by functionality:
+
+- **Rendering Tests** - Verify UI elements render correctly
+- **Form Input Tests** - Test user interactions
+- **Validation Tests** - Test form validation logic
+- **Form Submission Tests** - Test complete submission flow
+- **Integration Tests** - Test end-to-end user flows
+- **Navigation Tests** - Ensure navigation links work
+- **API Property Tests** - Verify external API contracts
+
+### Test Reasoning
+
+Tests are written to:
+
+- Ensure accessibility and prevent breaking changes
+- Verify security (password fields, input validation)
+- Test error handling and user feedback
+- Validate integration flows
+- Protect against API contract changes
+- Prevent navigation issues from code updates
 
 ## Security
 
-- Password strength validation
+- Password strength validation (client and server-side)
+- Strong password requirements (uppercase, lowercase, numbers, special characters)
 - Server-side authentication checks
 - Protected API routes
 - Row-level security with Supabase
 - Prisma query validation
+- Email confirmation for new accounts
+- Secure session management with Supabase SSR
 
 ## Learn More
 
@@ -240,6 +353,8 @@ secret-page-app/
 - [Supabase Documentation](https://supabase.com/docs)
 - [Prisma Documentation](https://www.prisma.io/docs)
 - [shadcn/ui Documentation](https://ui.shadcn.com)
+- [Jest Documentation](https://jestjs.io/docs/getting-started)
+- [React Testing Library Documentation](https://testing-library.com/react)
 
 ## License
 
