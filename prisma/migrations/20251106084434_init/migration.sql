@@ -35,6 +35,20 @@ CREATE TABLE "todos" (
     CONSTRAINT "todos_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "photos" (
+    "id" UUID NOT NULL,
+    "profile_id" UUID NOT NULL,
+    "name" TEXT NOT NULL,
+    "url" TEXT NOT NULL,
+    "size" INTEGER,
+    "mime_type" TEXT,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) NOT NULL,
+
+    CONSTRAINT "photos_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "profile_email_key" ON "profile"("email");
 
@@ -47,6 +61,15 @@ CREATE INDEX "todos_profile_id_idx" ON "todos"("profile_id");
 -- CreateIndex
 CREATE INDEX "todos_created_at_idx" ON "todos"("created_at");
 
+-- CreateIndex
+CREATE INDEX "photos_profile_id_idx" ON "photos"("profile_id");
+
+-- CreateIndex
+CREATE INDEX "photos_created_at_idx" ON "photos"("created_at");
+
+-- CreateIndex
+CREATE INDEX "photos_name_idx" ON "photos"("name");
+
 -- AddForeignKey
 ALTER TABLE "friendship" ADD CONSTRAINT "friendship_requester_id_fkey" FOREIGN KEY ("requester_id") REFERENCES "profile"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -55,3 +78,6 @@ ALTER TABLE "friendship" ADD CONSTRAINT "friendship_receiver_id_fkey" FOREIGN KE
 
 -- AddForeignKey
 ALTER TABLE "todos" ADD CONSTRAINT "todos_profile_id_fkey" FOREIGN KEY ("profile_id") REFERENCES "profile"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "photos" ADD CONSTRAINT "photos_profile_id_fkey" FOREIGN KEY ("profile_id") REFERENCES "profile"("id") ON DELETE CASCADE ON UPDATE CASCADE;
