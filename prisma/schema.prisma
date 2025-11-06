@@ -17,12 +17,13 @@ model Profile {
   updated_at     DateTime @updatedAt
   created_at     DateTime @default(now())
 
-  friendships_as_requester Friendship[] @relation("FriendshipRequester")
-  friendships_as_receiver  Friendship[] @relation("FriendshipReceiver")
+  friendships_as_requester Friendship[]    @relation("FriendshipRequester")
+  friendships_as_receiver  Friendship[]    @relation("FriendshipReceiver")
   todos                    Todo[]
   photos                   Photo[]
   foodPhotos               FoodPhoto[]
   reviews                  Review[]
+  pokemonReviews           PokemonReview[]
 
   @@map("profile")
 }
@@ -110,4 +111,39 @@ model Review {
   @@index([profileId])
   @@index([created_at])
   @@map("reviews")
+}
+
+model Pokemon {
+  id         String   @id @default(uuid()) @db.Uuid
+  pokemon_id Int      @unique // PokeAPI Pokemon ID
+  name       String   @unique
+  image_url  String
+  types      String[] // Array of Pokemon types
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @updatedAt @db.Timestamptz(6)
+
+  reviews PokemonReview[]
+
+  @@index([name])
+  @@index([pokemon_id])
+  @@index([created_at])
+  @@map("pokemon")
+}
+
+model PokemonReview {
+  id         String   @id @default(uuid()) @db.Uuid
+  pokemonId  String   @map("pokemon_id") @db.Uuid
+  profileId  String   @map("profile_id") @db.Uuid
+  rating     Int // 1-5 stars
+  comment    String? // Optional review text
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @updatedAt @db.Timestamptz(6)
+
+  pokemon Pokemon @relation(fields: [pokemonId], references: [id], onDelete: Cascade)
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([pokemonId])
+  @@index([profileId])
+  @@index([created_at])
+  @@map("pokemon_reviews")
 }
