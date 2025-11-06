@@ -15,6 +15,7 @@ import {
   Image as ImageIcon,
   UtensilsCrossed,
   Sparkles,
+  FileText,
 } from "lucide-react";
 
 export default async function HomePage() {
@@ -29,7 +30,7 @@ export default async function HomePage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center p-4 bg-muted/30">
-      <Card className="w-full max-w-2xl">
+      <Card className="w-full max-w-5xl">
         <CardHeader>
           <CardTitle className="text-3xl font-bold">
             Welcome to Multiple Activities App
@@ -39,7 +40,7 @@ export default async function HomePage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <Link href="/todos">
               <Card className="h-full hover:shadow-lg transition-all duration-200 hover:border-primary cursor-pointer group">
                 <CardContent className="p-6 flex flex-col items-center justify-center text-center space-y-3">
@@ -91,6 +92,21 @@ export default async function HomePage() {
                     <h3 className="font-semibold text-lg">Activity 4</h3>
                     <p className="text-sm text-muted-foreground">
                       Pokemon Review
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+            <Link href="/notes">
+              <Card className="h-full hover:shadow-lg transition-all duration-200 hover:border-primary cursor-pointer group">
+                <CardContent className="p-6 flex flex-col items-center justify-center text-center space-y-3">
+                  <div className="p-3 rounded-full bg-green-100 dark:bg-green-900/30 group-hover:bg-green-200 dark:group-hover:bg-green-900/50 transition-colors">
+                    <FileText className="h-8 w-8 text-green-600 dark:text-green-400" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-lg">Activity 5</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Markdown Notes
                     </p>
                   </div>
                 </CardContent>

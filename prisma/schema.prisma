@@ -24,6 +24,7 @@ model Profile {
   foodPhotos               FoodPhoto[]
   reviews                  Review[]
   pokemonReviews           PokemonReview[]
+  notes                    Note[]
 
   @@map("profile")
 }
@@ -146,4 +147,20 @@ model PokemonReview {
   @@index([profileId])
   @@index([created_at])
   @@map("pokemon_reviews")
+}
+
+model Note {
+  id         String   @id @default(uuid()) @db.Uuid
+  profileId  String   @map("profile_id") @db.Uuid
+  title      String
+  content    String // Markdown content
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @updatedAt @db.Timestamptz(6)
+
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
+  @@index([created_at])
+  @@index([title])
+  @@map("notes")
 }
