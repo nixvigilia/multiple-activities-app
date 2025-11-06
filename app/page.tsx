@@ -34,7 +34,7 @@ export default async function HomePage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <Link href="/todos">
               <Button variant="outline" className="w-full h-24 text-lg">
                 Activity 1: Todo List
@@ -43,6 +43,11 @@ export default async function HomePage() {
             <Link href="/photos">
               <Button variant="outline" className="w-full h-24 text-lg">
                 Activity 2: Photo Gallery
+              </Button>
+            </Link>
+            <Link href="/food-review">
+              <Button variant="outline" className="w-full h-24 text-lg">
+                Activity 3: Food Review
               </Button>
             </Link>
           </div>

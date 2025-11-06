@@ -21,6 +21,8 @@ model Profile {
   friendships_as_receiver  Friendship[] @relation("FriendshipReceiver")
   todos                    Todo[]
   photos                   Photo[]
+  foodPhotos               FoodPhoto[]
+  reviews                  Review[]
 
   @@map("profile")
 }
@@ -71,4 +73,41 @@ model Photo {
   @@index([created_at])
   @@index([name])
   @@map("photos")
+}
+
+model FoodPhoto {
+  id         String   @id @default(uuid()) @db.Uuid
+  profileId  String   @map("profile_id") @db.Uuid
+  name       String
+  url        String
+  size       Int? // File size in bytes
+  mime_type  String?  @map("mime_type")
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @updatedAt @db.Timestamptz(6)
+
+  profile Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  reviews Review[]
+
+  @@index([profileId])
+  @@index([created_at])
+  @@index([name])
+  @@map("food_photos")
+}
+
+model Review {
+  id          String   @id @default(uuid()) @db.Uuid
+  foodPhotoId String   @map("food_photo_id") @db.Uuid
+  profileId   String   @map("profile_id") @db.Uuid
+  rating      Int // 1-5 stars
+  comment     String? // Optional review text
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime @updatedAt @db.Timestamptz(6)
+
+  foodPhoto FoodPhoto @relation(fields: [foodPhotoId], references: [id], onDelete: Cascade)
+  profile   Profile   @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([foodPhotoId])
+  @@index([profileId])
+  @@index([created_at])
+  @@map("reviews")
 }

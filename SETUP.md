@@ -56,6 +56,16 @@ DIRECT_URL=postgresql://postgres.[YOUR-PROJECT-REF]:[YOUR-PASSWORD]@aws-0-[regio
 7. This will set up Row Level Security policies for the scic bucket
 8. If you encounter RLS policy errors, see `supabase/setup-photos-troubleshooting.md` for troubleshooting steps
 
+## Storage Setup for Food Review (Activity 3)
+
+1. Go to your Supabase Dashboard → **Storage**
+2. Click **Create Bucket**
+3. Name: `food-review`
+4. Make it **Public** (toggle on) - **This is important!**
+5. Click **Create bucket**
+6. Run the SQL script in `supabase/setup-food-review.sql` in your Supabase SQL Editor
+7. This will set up Row Level Security policies for the food-review bucket
+
 ## Generate Prisma Client
 
 After setting up your environment variables, run:
