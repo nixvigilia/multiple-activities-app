@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Secret Page App",
+  title: "Multiple Activities App",
   description: "A secure application with authentication",
 };
 
