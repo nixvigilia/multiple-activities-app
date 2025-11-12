@@ -36,11 +36,15 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center p-4 bg-muted/30">
       <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
+        <CardHeader className="space-y-3">
           <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
           <CardDescription>
             Enter your credentials to sign in to your account
           </CardDescription>
+          <div className="rounded-md border border-primary/40 bg-primary/10 px-3 py-2 text-sm font-medium">
+            This app shares its database with Secret Page App, so you can reuse
+            your existing account.
+          </div>
         </CardHeader>
         <form action={loginAction}>
           <CardContent className="space-y-4">

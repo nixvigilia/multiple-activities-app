@@ -83,6 +83,20 @@ export async function signup(
 
   const data = result.data;
 
+  const {prisma} = await import("@/lib/prisma");
+
+  const existingProfile = await prisma.profile.findUnique({
+    where: {email: data.email},
+    select: {id: true},
+  });
+
+  if (existingProfile) {
+    return {
+      success: false,
+      message: "An account with this email already exists. Please sign in.",
+    };
+  }
+
   const {error} = await supabase.auth.signUp(data);
 
   if (error) {
