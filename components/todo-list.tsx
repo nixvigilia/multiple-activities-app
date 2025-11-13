@@ -21,10 +21,36 @@ import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 import {toast} from "sonner";
 import {Plus, Trash2, Check, X} from "lucide-react";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {Label} from "@/components/ui/label";
+
+type Priority = "low" | "medium" | "high";
+
+const priorityOptions: {value: Priority; label: string}[] = [
+  {value: "low", label: "Low"},
+  {value: "medium", label: "Medium"},
+  {value: "high", label: "High"},
+];
+
+const priorityBadgeStyles: Record<Priority, string> = {
+  low: "bg-emerald-100 text-emerald-800 ring-1 ring-inset ring-emerald-200",
+  medium: "bg-amber-100 text-amber-800 ring-1 ring-inset ring-amber-200",
+  high: "bg-rose-100 text-rose-800 ring-1 ring-inset ring-rose-200",
+};
 
 export type Todo = {
   id: string;
   title: string;
+  priority: Priority;
   completed: boolean;
   created_at: Date;
   updated_at: Date;
@@ -40,6 +66,7 @@ export function TodoList({initialTodos}: TodoListProps) {
   const [createState, createAction] = useActionState(createTodo, null);
   const [editId, setEditId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
+  const [priority, setPriority] = useState<Priority>("medium");
 
   // Optimistic updates for better UX
   const [optimisticTodos, setOptimisticTodos] = useOptimistic(
@@ -71,6 +98,7 @@ export function TodoList({initialTodos}: TodoListProps) {
       // Reset form
       const form = document.getElementById("todo-form") as HTMLFormElement;
       form?.reset();
+      setPriority("medium");
     } else if (createState?.success === false) {
       toast.error(createState.message);
     }
@@ -145,6 +173,26 @@ export function TodoList({initialTodos}: TodoListProps) {
     });
   }
 
+  async function handlePriorityChange(id: string, newPriority: Priority) {
+    startTransition(async () => {
+      const currentTodo =
+        optimisticTodos.find((todo) => todo.id === id) ||
+        todos.find((todo) => todo.id === id);
+      setOptimisticTodos({
+        type: "update",
+        id,
+        todo: currentTodo ? {...currentTodo, priority: newPriority} : undefined,
+      });
+      const result = await updateTodo(id, {priority: newPriority});
+      if (result.success) {
+        await loadTodos();
+      } else {
+        toast.error(result.message);
+        await loadTodos();
+      }
+    });
+  }
+
   return (
     <div className="space-y-4">
       <form id="todo-form" action={createAction} className="flex gap-2">
@@ -155,6 +203,19 @@ export function TodoList({initialTodos}: TodoListProps) {
           disabled={isPending}
           className="flex-1"
         />
+        <select
+          name="priority"
+          value={priority}
+          onChange={(event) => setPriority(event.target.value as Priority)}
+          disabled={isPending}
+          className="rounded-md border border-input bg-background px-3 py-2 text-sm capitalize text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        >
+          {priorityOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
         <Button type="submit" disabled={isPending}>
           <Plus className="h-4 w-4 mr-2" />
           Add
@@ -170,7 +231,7 @@ export function TodoList({initialTodos}: TodoListProps) {
           optimisticTodos.map((todo) => (
             <div
               key={todo.id}
-              className="flex items-center gap-2 p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
+              className="flex flex-wrap items-center gap-3 p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
             >
               <input
                 type="checkbox"
@@ -179,6 +240,7 @@ export function TodoList({initialTodos}: TodoListProps) {
                 disabled={isPending}
                 className="h-5 w-5 rounded border-gray-300 cursor-pointer"
               />
+
               {editId === todo.id ? (
                 <div className="flex-1 flex gap-2">
                   <Input
@@ -223,6 +285,29 @@ export function TodoList({initialTodos}: TodoListProps) {
                   >
                     {todo.title}
                   </span>
+                  <span
+                    className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium capitalize ${priorityBadgeStyles[todo.priority]}`}
+                  >
+                    {todo.priority}
+                  </span>
+                  <select
+                    value={todo.priority}
+                    onChange={(event) => {
+                      event.stopPropagation();
+                      handlePriorityChange(
+                        todo.id,
+                        event.target.value as Priority
+                      );
+                    }}
+                    disabled={isPending}
+                    className="rounded-md border border-input bg-background px-2 py-1 text-xs capitalize text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  >
+                    {priorityOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
                   <Button
                     size="icon-sm"
                     variant="ghost"
