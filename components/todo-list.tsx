@@ -9,7 +9,7 @@
 
 "use client";
 
-import {useEffect, useState, useTransition} from "react";
+import {useCallback, useEffect, useState, useTransition} from "react";
 import {useActionState, useOptimistic} from "react";
 import {
   createTodo,
@@ -57,8 +57,10 @@ export type Todo = {
   updated_at: Date;
 };
 
+type RawTodo = Omit<Todo, "priority"> & {priority: string};
+
 type TodoListProps = {
-  initialTodos: Todo[];
+  initialTodos: RawTodo[];
 };
 
 export function TodoList({initialTodos}: TodoListProps) {
@@ -96,31 +98,37 @@ export function TodoList({initialTodos}: TodoListProps) {
     }
   );
 
-  useEffect(() => {
-    if (createState?.success) {
-      toast.success(createState.message);
-      loadTodos();
-      // Reset form
-      const form = document.getElementById("todo-form") as HTMLFormElement;
-      form?.reset();
-      setPriority("medium");
-    } else if (createState?.success === false) {
-      toast.error(createState.message);
-    }
-  }, [createState]);
-
-  async function loadTodos() {
+  const loadTodos = useCallback(async () => {
     try {
       const result = await getTodos();
       if (result.error) {
         toast.error(result.error);
       } else {
-        setTodos(result.data);
+        const normalized = (result.data as RawTodo[]).map((todo) => ({
+          ...todo,
+          priority: normalizePriority(todo.priority),
+        }));
+        setTodos(normalized);
       }
-    } catch (error) {
+    } catch {
       toast.error("Failed to load todos");
     }
-  }
+  }, []);
+
+  useEffect(() => {
+    if (createState?.success) {
+      toast.success(createState.message);
+      startTransition(() => {
+        void loadTodos();
+        setPriority("medium");
+      });
+      // Reset form
+      const form = document.getElementById("todo-form") as HTMLFormElement;
+      form?.reset();
+    } else if (createState?.success === false) {
+      toast.error(createState.message);
+    }
+  }, [createState, loadTodos]);
 
   async function handleToggleComplete(id: string, completed: boolean) {
     startTransition(async () => {
