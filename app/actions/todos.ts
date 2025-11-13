@@ -7,6 +7,7 @@ import {prisma} from "@/lib/prisma";
 
 const todoSchema = z.object({
   title: z.string().min(1, "Title is required").max(500, "Title is too long"),
+  priority: z.enum(["low", "medium", "high"]).default("medium"),
 });
 
 export type TodoActionResult = {
@@ -30,8 +31,10 @@ export async function createTodo(
     };
   }
 
+  const priorityEntry = formData.get("priority");
   const rawData = {
     title: formData.get("title"),
+    priority: typeof priorityEntry === "string" ? priorityEntry : undefined,
   };
 
   const result = todoSchema.safeParse(rawData);
@@ -48,6 +51,7 @@ export async function createTodo(
       data: {
         profileId: user.id,
         title: result.data.title,
+        priority: result.data.priority,
         completed: false,
       },
     });
@@ -66,9 +70,15 @@ export async function createTodo(
   }
 }
 
+type TodoUpdateInput = {
+  title?: string;
+  completed?: boolean;
+  priority?: "low" | "medium" | "high";
+};
+
 export async function updateTodo(
   id: string,
-  updates: {title?: string; completed?: boolean}
+  updates: TodoUpdateInput
 ): Promise<TodoActionResult> {
   const supabase = await createClient();
   const {
@@ -96,7 +106,7 @@ export async function updateTodo(
       };
     }
 
-    const updateData: {title?: string; completed?: boolean} = {};
+    const updateData: TodoUpdateInput = {};
     if (updates.title !== undefined) {
       const titleResult = z
         .string()
@@ -113,6 +123,19 @@ export async function updateTodo(
     }
     if (updates.completed !== undefined) {
       updateData.completed = updates.completed;
+    }
+    if (updates.priority !== undefined) {
+      const priorityResult = z
+        .enum(["low", "medium", "high"])
+        .safeParse(updates.priority);
+      if (!priorityResult.success) {
+        return {
+          success: false,
+          message:
+            priorityResult.error.issues[0]?.message || "Invalid priority",
+        };
+      }
+      updateData.priority = priorityResult.data;
     }
 
     await prisma.todo.update({
