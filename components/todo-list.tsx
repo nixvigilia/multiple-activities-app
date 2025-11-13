@@ -1,3 +1,12 @@
+// Adding Priority Levels in the Todo List Application.
+// 1. Add priority levels (‘LOW’, ‘MEDIUM’, ‘HIGH’) to your todo list.
+// 2. The user should be able to select a priority level when adding a task.
+// 3. The selected priority should remain visible even after refreshing the page.
+// 4. Optional: The user should be able to update the priority later.
+// 5. Push your code to the same repository that you’ve submitted.
+// 6. Before confirming that you’re done, make sure the changes are reflected on the Vercel link.
+// (Since the repo link is the same, ensure the deployment is up to date.)
+
 "use client";
 
 import {useEffect, useState, useTransition} from "react";
