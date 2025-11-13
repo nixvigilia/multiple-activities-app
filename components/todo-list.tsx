@@ -21,17 +21,6 @@ import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 import {toast} from "sonner";
 import {Plus, Trash2, Check, X} from "lucide-react";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {Label} from "@/components/ui/label";
 
 type Priority = "low" | "medium" | "high";
 
@@ -45,6 +34,18 @@ const priorityBadgeStyles: Record<Priority, string> = {
   low: "bg-emerald-100 text-emerald-800 ring-1 ring-inset ring-emerald-200",
   medium: "bg-amber-100 text-amber-800 ring-1 ring-inset ring-amber-200",
   high: "bg-rose-100 text-rose-800 ring-1 ring-inset ring-rose-200",
+};
+
+const priorityValues: Priority[] = ["low", "medium", "high"];
+
+const normalizePriority = (value: unknown): Priority => {
+  if (typeof value === "string") {
+    const normalized = value.toLowerCase() as Priority;
+    if (priorityValues.includes(normalized)) {
+      return normalized;
+    }
+  }
+  return "medium";
 };
 
 export type Todo = {
@@ -61,7 +62,11 @@ type TodoListProps = {
 };
 
 export function TodoList({initialTodos}: TodoListProps) {
-  const [todos, setTodos] = useState<Todo[]>(initialTodos);
+  const normalizedInitialTodos = initialTodos.map((todo) => ({
+    ...todo,
+    priority: normalizePriority(todo.priority),
+  }));
+  const [todos, setTodos] = useState<Todo[]>(normalizedInitialTodos);
   const [isPending, startTransition] = useTransition();
   const [createState, createAction] = useActionState(createTodo, null);
   const [editId, setEditId] = useState<string | null>(null);

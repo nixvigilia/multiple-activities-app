@@ -125,13 +125,14 @@ export async function updateTodo(
       updateData.completed = updates.completed;
     }
     if (updates.priority !== undefined) {
-      const priorityResult = z.enum(["low", "medium", "high"]).safeParse(
-        updates.priority
-      );
+      const priorityResult = z
+        .enum(["low", "medium", "high"])
+        .safeParse(updates.priority);
       if (!priorityResult.success) {
         return {
           success: false,
-          message: priorityResult.error.issues[0]?.message || "Invalid priority",
+          message:
+            priorityResult.error.issues[0]?.message || "Invalid priority",
         };
       }
       updateData.priority = priorityResult.data;
